@@ -1,14 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { savingsProductQueryOptions } from 'queries/savings/queries';
-import { useState } from 'react';
 import { filterSavingsProducts } from 'service/savingsCalculator.service';
 import { ListRow, colors, Assets } from 'tosslib';
 import { SavingsProduct, SavingsProductsFilter } from 'types/savingsProducts';
 
-export const SavingsProducts = ({ filter }: { filter: SavingsProductsFilter }) => {
+export const SavingsProducts = ({
+  filter,
+  selectedProductId,
+  setSelectedProductId,
+}: {
+  filter: SavingsProductsFilter;
+  selectedProductId: string | null;
+  setSelectedProductId: (id: string | null) => void;
+}) => {
   const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
-
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   if (!savingsProducts || savingsProducts.length === 0) {
     return <div>적금 상품이 없습니다.</div>;

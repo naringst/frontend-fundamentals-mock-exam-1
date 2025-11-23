@@ -23,6 +23,8 @@ const SavingCalculator = () => {
 
   const [currentTab, setCurrentTab] = useState<'products' | 'results'>('products');
 
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
   return (
     <>
       <NavigationBar title="적금 계산기" />
@@ -58,9 +60,17 @@ const SavingCalculator = () => {
       {(() => {
         switch (currentTab) {
           case 'products':
-            return <SavingsProducts filter={{ goalPrice, monthlyAmount, term }} />;
+            return (
+              <SavingsProducts
+                filter={{ goalPrice, monthlyAmount, term }}
+                selectedProductId={selectedProductId}
+                setSelectedProductId={setSelectedProductId}
+              />
+            );
           case 'results':
-            return <CalculateResult filter={{ goalPrice, monthlyAmount, term }} />;
+            return (
+              <CalculateResult filter={{ goalPrice, monthlyAmount, term }} selectedProductId={selectedProductId} />
+            );
           default:
             return null;
         }

@@ -1,7 +1,37 @@
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  calcDiffBetweenGoalAndEarnings,
+  calcRecommendMonthlyAmount,
+  calculateExpectedEarnings,
+} from 'service/savingsCalculator.service';
 import { Spacing, ListRow, colors, Border, ListHeader } from 'tosslib';
 import { SavingsProductsFilter } from 'types/savingsProducts';
 
-export const CalculateResult = ({ filter }: { filter: SavingsProductsFilter }) => {
+export const CalculateResult = ({
+  filter,
+  selectedProductId,
+}: {
+  filter: SavingsProductsFilter;
+  selectedProductId: string | null;
+}) => {
+  const queryClient = useQueryClient();
+
+  if (!selectedProductId) {
+    return (
+      <>
+        <Spacing size={40} />
+        <div style={{ textAlign: 'center', color: colors.grey600 }}>상품을 선택해주세요</div>
+      </>
+    );
+  }
+
+  const selectedProduct = queryClient
+    .getQueryData<any>(['savingsProducts'])
+    ?.find((product: any) => product.id === selectedProductId);
+
+  const expectedEarnings = calculateExpectedEarnings(filter.monthlyAmount, filter.term, selectedProduct.annualRate);
+  const diffBetweenGoalAndEarnings = calcDiffBetweenGoalAndEarnings(filter.goalPrice, expectedEarnings);
+  const recommendMonthlyAmount = calcRecommendMonthlyAmount(filter.goalPrice, filter.term, selectedProduct.annualRate);
   return (
     <>
       <Spacing size={8} />
@@ -12,7 +42,7 @@ export const CalculateResult = ({ filter }: { filter: SavingsProductsFilter }) =
             type="2RowTypeA"
             top="예상 수익 금액"
             topProps={{ color: colors.grey600 }}
-            bottom={`1,000,000원`}
+            bottom={`${expectedEarnings.toLocaleString()}원`}
             bottomProps={{ fontWeight: 'bold', color: colors.blue600 }}
           />
         }
@@ -23,7 +53,7 @@ export const CalculateResult = ({ filter }: { filter: SavingsProductsFilter }) =
             type="2RowTypeA"
             top="목표 금액과의 차이"
             topProps={{ color: colors.grey600 }}
-            bottom={`-500,000원`}
+            bottom={`${diffBetweenGoalAndEarnings.toLocaleString()}원`}
             bottomProps={{ fontWeight: 'bold', color: colors.blue600 }}
           />
         }
@@ -34,7 +64,7 @@ export const CalculateResult = ({ filter }: { filter: SavingsProductsFilter }) =
             type="2RowTypeA"
             top="추천 월 납입 금액"
             topProps={{ color: colors.grey600 }}
-            bottom={`100,000원`}
+            bottom={`${recommendMonthlyAmount.toLocaleString()}원`}
             bottomProps={{ fontWeight: 'bold', color: colors.blue600 }}
           />
         }
