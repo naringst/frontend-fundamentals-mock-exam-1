@@ -9,9 +9,7 @@ import { CalculateResult } from './components/CalculateResult';
 export function SavingsCalculatorPage() {
   return (
     <ErrorBoundary fallback={<div>오류가 발생했습니다.</div>}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <SavingCalculator />
-      </Suspense>
+      <SavingCalculator />
     </ErrorBoundary>
   );
 }
@@ -61,24 +59,26 @@ const SavingCalculator = () => {
         </Tab.Item>
       </Tab>
 
-      {(() => {
-        switch (currentTab) {
-          case 'products':
-            return (
-              <SavingsProducts
-                filter={{ goalPrice, monthlyAmount, term }}
-                selectedProductId={selectedProductId}
-                onProductSelect={handleProductSelect}
-              />
-            );
-          case 'results':
-            return (
-              <CalculateResult filter={{ goalPrice, monthlyAmount, term }} selectedProductId={selectedProductId} />
-            );
-          default:
-            return null;
-        }
-      })()}
+      <Suspense fallback={<div>로딩 중...</div>}>
+        {(() => {
+          switch (currentTab) {
+            case 'products':
+              return (
+                <SavingsProducts
+                  filter={{ goalPrice, monthlyAmount, term }}
+                  selectedProductId={selectedProductId}
+                  onProductSelect={handleProductSelect}
+                />
+              );
+            case 'results':
+              return (
+                <CalculateResult filter={{ goalPrice, monthlyAmount, term }} selectedProductId={selectedProductId} />
+              );
+            default:
+              return null;
+          }
+        })()}
+      </Suspense>
     </>
   );
 };
