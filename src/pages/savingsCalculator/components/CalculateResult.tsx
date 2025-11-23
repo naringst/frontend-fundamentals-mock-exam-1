@@ -5,7 +5,8 @@ import {
   calcDiffBetweenGoalAndEarnings,
   calcRecommendMonthlyAmount,
   calculateExpectedEarnings,
-} from 'service/savingsCalculator.service';
+} from 'service/savingsCalculator/calculateResult.service';
+
 import { Spacing, ListRow, colors, Border, ListHeader, Assets } from 'tosslib';
 import { SavingsProduct, SavingsProductsFilter } from 'types/savingsProducts';
 import { useFilteredSavingsProducts } from '../hooks/useFilteredSavingsProducts';

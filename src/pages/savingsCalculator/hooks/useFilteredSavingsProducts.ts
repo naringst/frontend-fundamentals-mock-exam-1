@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { savingsProductQueryOptions } from 'queries/savings/queries';
-import { filterSavingsProducts, sortSavingsProductsByAnnualRate } from 'service/savingsCalculator.service';
+import { sortSavingsProductsByAnnualRate } from 'service/savingsCalculator/calculateResult.service';
+import { filterSavingsProducts } from 'service/savingsCalculator/savingsCalculateFilter.service';
+
 import { SavingsProductsFilter } from 'types/savingsProducts';
 
 interface UseFilteredSavingsProductsOptions {
