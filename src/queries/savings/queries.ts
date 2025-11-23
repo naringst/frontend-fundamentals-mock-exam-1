@@ -11,6 +11,7 @@ export const savingsProductQueryOptions = (options?: SavingsProductQueryOptionsI
     queryFn: getSavingsProducts,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
+    throwOnError: true,
     ...options,
   };
 };

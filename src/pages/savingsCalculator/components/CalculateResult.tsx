@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { savingsProductQueryOptions } from 'queries/savings/queries';
 import {
   calcDiffBetweenGoalAndEarnings,
@@ -18,7 +18,7 @@ export const CalculateResult = ({
   filter: SavingsProductsFilter;
   selectedProductId: string | null;
 }) => {
-  const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
+  const { data: savingsProducts } = useSuspenseQuery(savingsProductQueryOptions());
   const { filteredProducts } = useFilteredSavingsProducts({
     filter,
     sortByAnnualRate: true,

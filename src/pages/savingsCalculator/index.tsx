@@ -7,14 +7,6 @@ import { SavingsProducts } from './components/SavingsProducts';
 import { CalculateResult } from './components/CalculateResult';
 
 export function SavingsCalculatorPage() {
-  return (
-    <ErrorBoundary fallback={<div>오류가 발생했습니다.</div>}>
-      <SavingCalculator />
-    </ErrorBoundary>
-  );
-}
-
-const SavingCalculator = () => {
   const [goalPrice, setGoalPrice] = useState<number>(0);
   const [monthlyAmount, setMonthlyAmount] = useState<number>(0);
   const [term, setTerm] = useState<number>(12);
@@ -59,26 +51,28 @@ const SavingCalculator = () => {
         </Tab.Item>
       </Tab>
 
-      <Suspense fallback={<div>로딩 중...</div>}>
-        {(() => {
-          switch (currentTab) {
-            case 'products':
-              return (
-                <SavingsProducts
-                  filter={{ goalPrice, monthlyAmount, term }}
-                  selectedProductId={selectedProductId}
-                  onProductSelect={handleProductSelect}
-                />
-              );
-            case 'results':
-              return (
-                <CalculateResult filter={{ goalPrice, monthlyAmount, term }} selectedProductId={selectedProductId} />
-              );
-            default:
-              return null;
-          }
-        })()}
-      </Suspense>
+      <ErrorBoundary fallback={<div>오류가 발생했습니다.</div>}>
+        <Suspense fallback={<div>로딩 중...</div>}>
+          {(() => {
+            switch (currentTab) {
+              case 'products':
+                return (
+                  <SavingsProducts
+                    filter={{ goalPrice, monthlyAmount, term }}
+                    selectedProductId={selectedProductId}
+                    onProductSelect={handleProductSelect}
+                  />
+                );
+              case 'results':
+                return (
+                  <CalculateResult filter={{ goalPrice, monthlyAmount, term }} selectedProductId={selectedProductId} />
+                );
+              default:
+                return null;
+            }
+          })()}
+        </Suspense>
+      </ErrorBoundary>
     </>
   );
-};
+}

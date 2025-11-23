@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { savingsProductQueryOptions } from 'queries/savings/queries';
 import { sortSavingsProductsByAnnualRate } from 'service/savingsCalculator/calculateResult.service';
 import { filterSavingsProducts } from 'service/savingsCalculator/savingsCalculateFilter.service';
@@ -11,7 +11,7 @@ interface UseFilteredSavingsProductsOptions {
 }
 
 export const useFilteredSavingsProducts = ({ filter, sortByAnnualRate = false }: UseFilteredSavingsProductsOptions) => {
-  const { data: savingsProducts, isLoading, error } = useQuery(savingsProductQueryOptions());
+  const { data: savingsProducts, isLoading, error } = useSuspenseQuery(savingsProductQueryOptions());
 
   if (!savingsProducts) {
     return {
