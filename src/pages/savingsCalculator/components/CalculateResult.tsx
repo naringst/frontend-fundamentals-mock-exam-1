@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { savingsProductQueryOptions } from 'queries/savings/queries';
 import {
   calcDiffBetweenGoalAndEarnings,
@@ -17,10 +17,10 @@ export const CalculateResult = ({
   filter: SavingsProductsFilter;
   selectedProductId: string | null;
 }) => {
-  const queryClient = useQueryClient();
   const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
+  const selectedProduct = savingsProducts?.find((product: SavingsProduct) => product.id === selectedProductId);
 
-  if (!selectedProductId) {
+  if (!selectedProductId || !selectedProduct) {
     return (
       <>
         <Spacing size={40} />
@@ -28,10 +28,6 @@ export const CalculateResult = ({
       </>
     );
   }
-
-  const selectedProduct = queryClient
-    .getQueryData<any>(['savingsProducts'])
-    ?.find((product: any) => product.id === selectedProductId);
 
   const expectedEarnings = calculateExpectedEarnings(filter.monthlyAmount, filter.term, selectedProduct.annualRate);
   const diffBetweenGoalAndEarnings = calcDiffBetweenGoalAndEarnings(filter.goalPrice, expectedEarnings);
