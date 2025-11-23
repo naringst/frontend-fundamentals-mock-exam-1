@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { savingsProductQueryOptions } from 'queries/savings/queries';
-import { Suspense } from 'react';
+import { ChangeEvent, Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Assets, Border, colors, ListRow, NavigationBar, SelectBottomSheet, Spacing, Tab, TextField } from 'tosslib';
 import { SavingsProduct } from 'types/savingsProducts';
@@ -15,16 +15,35 @@ export function SavingsCalculatorPage() {
   );
 }
 
-const SavingsProducts = () => {
+const SavingsProducts = ({ filter }: { filter: { goalPrice: number; monthlyAmount: number; term: number } }) => {
   const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
+
+  const monthlyAmountFilter = (product: SavingsProduct) => {
+    if (filter.monthlyAmount === 0) {
+      return true;
+    }
+    return filter.monthlyAmount >= product.minMonthlyAmount && filter.monthlyAmount <= product.maxMonthlyAmount;
+  };
+
+  const availableTermsFilter = (product: SavingsProduct) => {
+    return product.availableTerms === filter.term;
+  };
+
+  const filteredSavingsProducts = savingsProducts?.filter(product => {
+    return monthlyAmountFilter(product) && availableTermsFilter(product);
+  });
 
   if (!savingsProducts || savingsProducts.length === 0) {
     return <div>적금 상품이 없습니다.</div>;
   }
 
+  if (!filteredSavingsProducts || filteredSavingsProducts.length === 0) {
+    return <div>조건에 맞는 적금 상품이 없습니다.</div>;
+  }
+
   return (
     <>
-      {savingsProducts.map((product: SavingsProduct) => {
+      {filteredSavingsProducts.map((product: SavingsProduct) => {
         return (
           <ListRow
             key={product.id}
@@ -49,17 +68,38 @@ const SavingsProducts = () => {
 };
 
 const SavingCalculator = () => {
+  const [goalPrice, setGoalPrice] = useState<number>(0);
+  const [monthlyAmount, setMonthlyAmount] = useState<number>(0);
+  const [term, setTerm] = useState<number>(12);
+
   return (
     <>
       <NavigationBar title="적금 계산기" />
 
       <Spacing size={16} />
 
-      <TextField label="목표 금액" placeholder="목표 금액을 입력하세요" suffix="원" />
+      <TextField
+        label="목표 금액"
+        placeholder="목표 금액을 입력하세요"
+        suffix="원"
+        value={goalPrice === 0 ? '' : goalPrice.toString()}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGoalPrice(Number(e.target.value))}
+      />
       <Spacing size={16} />
-      <TextField label="월 납입액" placeholder="희망 월 납입액을 입력하세요" suffix="원" />
+      <TextField
+        label="월 납입액"
+        placeholder="희망 월 납입액을 입력하세요"
+        value={monthlyAmount === 0 ? '' : monthlyAmount.toString()}
+        suffix="원"
+        onChange={(e: ChangeEvent<HTMLInputElement>) => setMonthlyAmount(Number(e.target.value))}
+      />
       <Spacing size={16} />
-      <SelectBottomSheet label="저축 기간" title="저축 기간을 선택해주세요" value={12} onChange={() => {}}>
+      <SelectBottomSheet
+        label="저축 기간"
+        title="저축 기간을 선택해주세요"
+        value={term}
+        onChange={value => setTerm(value)}
+      >
         <SelectBottomSheet.Option value={6}>6개월</SelectBottomSheet.Option>
         <SelectBottomSheet.Option value={12}>12개월</SelectBottomSheet.Option>
         <SelectBottomSheet.Option value={24}>24개월</SelectBottomSheet.Option>
@@ -78,7 +118,7 @@ const SavingCalculator = () => {
         </Tab.Item>
       </Tab>
 
-      <SavingsProducts />
+      <SavingsProducts filter={{ goalPrice, monthlyAmount, term }} />
 
       {/* 아래는 계산 결과 탭 내용이에요. 계산 결과 탭을 구현할 때 주석을 해제해주세요. */}
       {/* <Spacing size={8} />
