@@ -2,15 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { savingsProductQueryOptions } from 'queries/savings/queries';
 import { filterSavingsProducts } from 'service/savingsCalculator.service';
 import { ListRow, colors, Assets } from 'tosslib';
-import { SavingsProduct } from 'types/savingsProducts';
+import { SavingsProduct, SavingsProductsFilter } from 'types/savingsProducts';
 
-export interface Filter {
-  goalPrice: number;
-  monthlyAmount: number;
-  term: number;
-}
-
-export const SavingsProducts = ({ filter }: { filter: Filter }) => {
+export const SavingsProducts = ({ filter }: { filter: SavingsProductsFilter }) => {
   const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
 
   if (!savingsProducts || savingsProducts.length === 0) {
