@@ -33,12 +33,7 @@ export const CalculateResult = ({
   }, [selectedProductId, savingsProducts]);
 
   if (!selectedProduct) {
-    return (
-      <>
-        <Spacing size={40} />
-        <div style={{ textAlign: 'center', color: colors.grey600 }}>상품을 선택해주세요</div>
-      </>
-    );
+    return <ListRow contents={<ListRow.Texts type="1RowTypeA" top="상품을 선택해주세요." />} />;
   }
 
   const expectedEarnings = calculateExpectedEarnings(filter.monthlyAmount, filter.term, selectedProduct.annualRate);
