@@ -25,6 +25,10 @@ const SavingCalculator = () => {
 
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
+  const handleProductSelect = (productId: string) => {
+    setSelectedProductId(productId === selectedProductId ? null : productId);
+  };
+
   return (
     <>
       <NavigationBar title="적금 계산기" />
@@ -64,7 +68,7 @@ const SavingCalculator = () => {
               <SavingsProducts
                 filter={{ goalPrice, monthlyAmount, term }}
                 selectedProductId={selectedProductId}
-                setSelectedProductId={setSelectedProductId}
+                onProductSelect={handleProductSelect}
               />
             );
           case 'results':

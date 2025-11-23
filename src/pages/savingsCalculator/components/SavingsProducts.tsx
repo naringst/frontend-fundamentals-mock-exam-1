@@ -2,15 +2,13 @@ import { ListRow, colors, Assets } from 'tosslib';
 import { SavingsProduct, SavingsProductsFilter } from 'types/savingsProducts';
 import { useFilteredSavingsProducts } from '../hooks/useFilteredSavingsProducts';
 
-export const SavingsProducts = ({
-  filter,
-  selectedProductId,
-  setSelectedProductId,
-}: {
+interface SavingsProductsProps {
   filter: SavingsProductsFilter;
   selectedProductId: string | null;
-  setSelectedProductId: (id: string | null) => void;
-}) => {
+  onProductSelect: (productId: string) => void;
+}
+
+export const SavingsProducts = ({ filter, selectedProductId, onProductSelect }: SavingsProductsProps) => {
   const { filteredProducts, isEmpty } = useFilteredSavingsProducts({ filter });
 
   if (isEmpty) {
@@ -35,9 +33,7 @@ export const SavingsProducts = ({
               />
             }
             right={selectedProductId === product.id && <Assets.Icon name="icon-check-circle-green" />}
-            onClick={() => {
-              setSelectedProductId(product.id === selectedProductId ? null : product.id);
-            }}
+            onClick={() => onProductSelect(product.id)}
           />
         );
       })}
