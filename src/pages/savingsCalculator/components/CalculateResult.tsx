@@ -4,11 +4,10 @@ import {
   calcDiffBetweenGoalAndEarnings,
   calcRecommendMonthlyAmount,
   calculateExpectedEarnings,
-  filterSavingsProducts,
-  sortSavingsProductsByAnnualRate,
 } from 'service/savingsCalculator.service';
 import { Spacing, ListRow, colors, Border, ListHeader, Assets } from 'tosslib';
 import { SavingsProduct, SavingsProductsFilter } from 'types/savingsProducts';
+import { useFilteredSavingsProducts } from '../hooks/useFilteredSavingsProducts';
 
 export const CalculateResult = ({
   filter,
@@ -19,6 +18,12 @@ export const CalculateResult = ({
 }) => {
   const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
   const selectedProduct = savingsProducts?.find((product: SavingsProduct) => product.id === selectedProductId);
+
+  const { filteredProducts } = useFilteredSavingsProducts({
+    filter,
+    sortByAnnualRate: true,
+  });
+  const sortedSavingsProducts = filteredProducts.slice(0, 2);
 
   if (!selectedProductId || !selectedProduct) {
     return (
@@ -32,9 +37,6 @@ export const CalculateResult = ({
   const expectedEarnings = calculateExpectedEarnings(filter.monthlyAmount, filter.term, selectedProduct.annualRate);
   const diffBetweenGoalAndEarnings = calcDiffBetweenGoalAndEarnings(filter.goalPrice, expectedEarnings);
   const recommendMonthlyAmount = calcRecommendMonthlyAmount(filter.goalPrice, filter.term, selectedProduct.annualRate);
-
-  const filteredSavingsProducts = filterSavingsProducts(filter, savingsProducts || []);
-  const sortedSavingsProducts = sortSavingsProductsByAnnualRate(filteredSavingsProducts).slice(0, 2);
 
   return (
     <>

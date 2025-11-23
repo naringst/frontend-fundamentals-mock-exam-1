@@ -1,8 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { savingsProductQueryOptions } from 'queries/savings/queries';
-import { filterSavingsProducts } from 'service/savingsCalculator.service';
 import { ListRow, colors, Assets } from 'tosslib';
 import { SavingsProduct, SavingsProductsFilter } from 'types/savingsProducts';
+import { useFilteredSavingsProducts } from '../hooks/useFilteredSavingsProducts';
 
 export const SavingsProducts = ({
   filter,
@@ -13,20 +11,15 @@ export const SavingsProducts = ({
   selectedProductId: string | null;
   setSelectedProductId: (id: string | null) => void;
 }) => {
-  const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
+  const { filteredProducts, isEmpty } = useFilteredSavingsProducts({ filter });
 
-  if (!savingsProducts || savingsProducts.length === 0) {
-    return <div>적금 상품이 없습니다.</div>;
-  }
-
-  const filteredSavingsProducts = filterSavingsProducts(filter, savingsProducts);
-  if (!filteredSavingsProducts || filteredSavingsProducts.length === 0) {
+  if (isEmpty) {
     return <div>조건에 맞는 적금 상품이 없습니다.</div>;
   }
 
   return (
     <>
-      {filteredSavingsProducts.map((product: SavingsProduct) => {
+      {filteredProducts.map((product: SavingsProduct) => {
         return (
           <ListRow
             key={product.id}
