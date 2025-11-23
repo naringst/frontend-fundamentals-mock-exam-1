@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { savingsProductQueryOptions } from 'queries/savings/queries';
 import { ChangeEvent, Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { filterSavingsProducts } from 'service/savingsCalculator.service';
 import { Assets, Border, colors, ListRow, NavigationBar, SelectBottomSheet, Spacing, Tab, TextField } from 'tosslib';
 import { SavingsProduct } from 'types/savingsProducts';
 
@@ -15,28 +16,19 @@ export function SavingsCalculatorPage() {
   );
 }
 
-const SavingsProducts = ({ filter }: { filter: { goalPrice: number; monthlyAmount: number; term: number } }) => {
+export interface Filter {
+  goalPrice: number;
+  monthlyAmount: number;
+  term: number;
+}
+const SavingsProducts = ({ filter }: { filter: Filter }) => {
   const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
-
-  const monthlyAmountFilter = (product: SavingsProduct) => {
-    if (filter.monthlyAmount === 0) {
-      return true;
-    }
-    return filter.monthlyAmount >= product.minMonthlyAmount && filter.monthlyAmount <= product.maxMonthlyAmount;
-  };
-
-  const availableTermsFilter = (product: SavingsProduct) => {
-    return product.availableTerms === filter.term;
-  };
-
-  const filteredSavingsProducts = savingsProducts?.filter(product => {
-    return monthlyAmountFilter(product) && availableTermsFilter(product);
-  });
 
   if (!savingsProducts || savingsProducts.length === 0) {
     return <div>적금 상품이 없습니다.</div>;
   }
 
+  const filteredSavingsProducts = filterSavingsProducts(filter, savingsProducts);
   if (!filteredSavingsProducts || filteredSavingsProducts.length === 0) {
     return <div>조건에 맞는 적금 상품이 없습니다.</div>;
   }
