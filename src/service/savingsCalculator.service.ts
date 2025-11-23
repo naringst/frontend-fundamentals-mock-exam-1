@@ -1,4 +1,4 @@
-import { Filter } from 'pages/SavingsCalculatorPage';
+import { Filter } from 'pages/savingsCalculator';
 import { SavingsProduct } from 'types/savingsProducts';
 
 const monthlyAmountFilter = (filter: Filter, product: SavingsProduct) => {
