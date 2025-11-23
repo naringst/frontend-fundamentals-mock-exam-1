@@ -1,7 +1,8 @@
-import { ChangeEvent, Suspense, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Border, NavigationBar, SelectBottomSheet, Spacing, Tab, TextField } from 'tosslib';
+import { Border, NavigationBar, Spacing, Tab } from 'tosslib';
 
+import { CalculatorInputs } from './components/CalculatorInputs';
 import { SavingsProducts } from './components/SavingsProducts';
 
 export function SavingsCalculatorPage() {
@@ -25,32 +26,14 @@ const SavingCalculator = () => {
 
       <Spacing size={16} />
 
-      <TextField
-        label="목표 금액"
-        placeholder="목표 금액을 입력하세요"
-        suffix="원"
-        value={goalPrice === 0 ? '' : goalPrice.toString()}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGoalPrice(Number(e.target.value))}
+      <CalculatorInputs
+        filter={{ goalPrice, monthlyAmount, term }}
+        onChange={{
+          goalPrice: setGoalPrice,
+          monthlyAmount: setMonthlyAmount,
+          term: setTerm,
+        }}
       />
-      <Spacing size={16} />
-      <TextField
-        label="월 납입액"
-        placeholder="희망 월 납입액을 입력하세요"
-        value={monthlyAmount === 0 ? '' : monthlyAmount.toString()}
-        suffix="원"
-        onChange={(e: ChangeEvent<HTMLInputElement>) => setMonthlyAmount(Number(e.target.value))}
-      />
-      <Spacing size={16} />
-      <SelectBottomSheet
-        label="저축 기간"
-        title="저축 기간을 선택해주세요"
-        value={term}
-        onChange={value => setTerm(value)}
-      >
-        <SelectBottomSheet.Option value={6}>6개월</SelectBottomSheet.Option>
-        <SelectBottomSheet.Option value={12}>12개월</SelectBottomSheet.Option>
-        <SelectBottomSheet.Option value={24}>24개월</SelectBottomSheet.Option>
-      </SelectBottomSheet>
 
       <Spacing size={24} />
       <Border height={16} />
