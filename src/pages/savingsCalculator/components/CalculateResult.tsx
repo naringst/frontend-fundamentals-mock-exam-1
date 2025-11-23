@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { savingsProductQueryOptions } from 'queries/savings/queries';
 import {
@@ -17,15 +18,20 @@ export const CalculateResult = ({
   selectedProductId: string | null;
 }) => {
   const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
-  const selectedProduct = savingsProducts?.find((product: SavingsProduct) => product.id === selectedProductId);
-
   const { filteredProducts } = useFilteredSavingsProducts({
     filter,
     sortByAnnualRate: true,
   });
   const sortedSavingsProducts = filteredProducts.slice(0, 2);
 
-  if (!selectedProductId || !selectedProduct) {
+  const selectedProduct = useMemo(() => {
+    if (!selectedProductId || !savingsProducts) {
+      return null;
+    }
+    return savingsProducts.find((product: SavingsProduct) => product.id === selectedProductId) || null;
+  }, [selectedProductId, savingsProducts]);
+
+  if (!selectedProduct) {
     return (
       <>
         <Spacing size={40} />
