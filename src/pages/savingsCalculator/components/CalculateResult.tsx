@@ -1,11 +1,14 @@
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { savingsProductQueryOptions } from 'queries/savings/queries';
 import {
   calcDiffBetweenGoalAndEarnings,
   calcRecommendMonthlyAmount,
   calculateExpectedEarnings,
+  filterSavingsProducts,
+  sortSavingsProductsByAnnualRate,
 } from 'service/savingsCalculator.service';
-import { Spacing, ListRow, colors, Border, ListHeader } from 'tosslib';
-import { SavingsProductsFilter } from 'types/savingsProducts';
+import { Spacing, ListRow, colors, Border, ListHeader, Assets } from 'tosslib';
+import { SavingsProduct, SavingsProductsFilter } from 'types/savingsProducts';
 
 export const CalculateResult = ({
   filter,
@@ -15,6 +18,7 @@ export const CalculateResult = ({
   selectedProductId: string | null;
 }) => {
   const queryClient = useQueryClient();
+  const { data: savingsProducts } = useQuery(savingsProductQueryOptions());
 
   if (!selectedProductId) {
     return (
@@ -32,6 +36,10 @@ export const CalculateResult = ({
   const expectedEarnings = calculateExpectedEarnings(filter.monthlyAmount, filter.term, selectedProduct.annualRate);
   const diffBetweenGoalAndEarnings = calcDiffBetweenGoalAndEarnings(filter.goalPrice, expectedEarnings);
   const recommendMonthlyAmount = calcRecommendMonthlyAmount(filter.goalPrice, filter.term, selectedProduct.annualRate);
+
+  const filteredSavingsProducts = filterSavingsProducts(filter, savingsProducts || []);
+  const sortedSavingsProducts = sortSavingsProductsByAnnualRate(filteredSavingsProducts).slice(0, 2);
+
   return (
     <>
       <Spacing size={8} />
@@ -77,35 +85,26 @@ export const CalculateResult = ({
       <ListHeader title={<ListHeader.TitleParagraph fontWeight="bold">추천 상품 목록</ListHeader.TitleParagraph>} />
       <Spacing size={12} />
 
-      <ListRow
-        contents={
-          <ListRow.Texts
-            type="3RowTypeA"
-            top={'기본 정기적금'}
-            topProps={{ fontSize: 16, fontWeight: 'bold', color: colors.grey900 }}
-            middle={`연 이자율: 3.2%`}
-            middleProps={{ fontSize: 14, color: colors.blue600, fontWeight: 'medium' }}
-            bottom={`100,000원 ~ 500,000원 | 12개월`}
-            bottomProps={{ fontSize: 13, color: colors.grey600 }}
+      {/* 추천 적금 리스트 이자율 높은 순서로  */}
+      {sortedSavingsProducts.map((product: SavingsProduct) => {
+        return (
+          <ListRow
+            key={product.id}
+            contents={
+              <ListRow.Texts
+                type="3RowTypeA"
+                top={product.name}
+                topProps={{ fontSize: 16, fontWeight: 'bold', color: colors.grey900 }}
+                middle={`연 이자율: ${product.annualRate}%`}
+                middleProps={{ fontSize: 14, color: colors.blue600, fontWeight: 'medium' }}
+                bottom={`${product.minMonthlyAmount.toLocaleString()}원 ~ ${product.maxMonthlyAmount.toLocaleString()}원 | ${product.availableTerms}개월`}
+                bottomProps={{ fontSize: 13, color: colors.grey600 }}
+              />
+            }
+            right={selectedProductId === product.id && <Assets.Icon name="icon-check-circle-green" />}
           />
-        }
-        onClick={() => {}}
-      />
-      <ListRow
-        contents={
-          <ListRow.Texts
-            type="3RowTypeA"
-            top={'고급 정기적금'}
-            topProps={{ fontSize: 16, fontWeight: 'bold', color: colors.grey900 }}
-            middle={`연 이자율: 2.8%`}
-            middleProps={{ fontSize: 14, color: colors.blue600, fontWeight: 'medium' }}
-            bottom={`50,000원 ~ 1,000,000원 | 24개월`}
-            bottomProps={{ fontSize: 13, color: colors.grey600 }}
-          />
-        }
-        onClick={() => {}}
-      />
-
+        );
+      })}
       <Spacing size={40} />
     </>
   );

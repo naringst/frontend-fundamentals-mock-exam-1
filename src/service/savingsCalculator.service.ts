@@ -64,3 +64,12 @@ export const calcRecommendMonthlyAmount = (goalPrice: number, term: number, annu
   const recommendedAmount = goalPrice / (term * (1 + (Number(annualRate) / 100) * 0.5));
   return Math.ceil(recommendedAmount / 1000) * 1000;
 };
+
+/**
+ * 적금 상품을 이자율 높은 순서로 정렬
+ * @param products 정렬할 상품 목록
+ * @returns 이자율이 높은 순서로 정렬된 상품 목록
+ */
+export const sortSavingsProductsByAnnualRate = (products: SavingsProduct[]): SavingsProduct[] => {
+  return [...products].sort((a, b) => b.annualRate - a.annualRate);
+};
